@@ -273,7 +273,7 @@ if [ ! "${SKIP_DOWNLOAD}" == "" ]; then
 	start_progress "Downloading and extracting ArchLinuxARM rootfs"
 
 	wget --quiet -O - $tar_file | tar xzvvp -C $MY_TMP_DIR >> ${LOGFILE} 2>&1
-f
+fi
 
 #${BOOTSTRAP_SOURCE_DIR}/bin/genfstab -U /tmp >> $BOOTSTRAP_SOURCE_DIR/etc/fstab
 
