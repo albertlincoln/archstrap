@@ -1,0 +1,30 @@
+xf86-video-intel xorg-server xorg-server-utils xorg-xinit xorg-apps
+xfce4 xfce4-goodies gvfs ttf-liberation xdg-user-dirs opendesktop-fonts firefox
+alsa-utils pavucontrol pulseaudio-alsa ntp
+sudoers
+rsync
+gst-plugins-base gst-plugins-base-libs gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gstreamer0.10 gstreamer0.10-plugins
+git bash-completion 
+vim vim-plugins
+gnome-keyring
+mpv
+redshift
+tmux
+ttf-hack
+xorg-drivers
+i3
+sshfs
+openssh
+chromium
+iw
+networkmanager
+nmap
+network-manager-applet
+nm-connection-editor
+fdupes
+wpa_supplicant
+cpupower
+ntfs-3g
+intel-ucode
+libva-utils
+xorg-xdpyinfo xorg-xdriinfo xorg-xvinfo xorg-xwininfo vdpauinfo clinfo

@@ -255,11 +255,13 @@ then
   exit 
 fi
 
+MACHINE_NAME="archlnx-$(xxd -p -l 2 /dev/urandom)"
+
 if [ "${SKIP_FORMAT}" == "" ]; then
 	parted -s ${target_disk} -- mklabel msdos \
 	    mkpart primary ext2 2048s -1s
 	sleep 1
-	mkfs.ext4 -L "archlinux-"$(date +%s)  -O "^has_journal" -m 0 ${target_rootfs}
+	mkfs.ext4 -L $MACHINE_NAME -O "^has_journal" -m 0 ${target_rootfs}
 fi
 
 #mount -t ext4 ${target_rootfs} $TARGET_DIR
@@ -276,15 +278,28 @@ if [ ! -d ${BOOTSTRAP_SOURCE_DIR} ]; then
 fi
 
 echo "Server = http://mirrors.acm.wpi.edu/archlinux/\$repo/os/\$arch" > ${BOOTSTRAP_SOURCE_DIR}/etc/pacman.d/mirrorlist
+
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "mount -t ext4 ${target_rootfs} ${TARGET_DIR}"
 
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacman-key --init"
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacman-key --populate archlinux"
 
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacstrap ${TARGET_DIR} base" 
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacstrap ${TARGET_DIR} base base-devel grub-bios" 
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "genfstab -p ${TARGET_DIR}  >> ${TARGET_DIR}/etc/fstab"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} "grub-mkconfig -o /boot/grub/grub.cfg"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} "grub-install ${target_disk}"
+echo $MACHINE_NAME >> ${BOOTSTRAP_SOURCE_DIR}/${TARGET_DIR}/etc/hostname
 
-
-
+umount ${target_rootfs}
+# dont need to arch-chroot anymore
+mount -t ext4 ${target_rootfs} $TARGET_DIR
+echo "en_US.UTF-8 UTF-8" >> $TARGET_DIR/etc/locale.gen
+chroot ${TARGET_DIR} locale-gen
+cp /etc/timezone $TARGET_DIR/etc/
+rm $TARGET_DIR/etc/localtime
+chroot ${TARGET_DIR} "ln -s /usr/share/zoneinfo/$(cat /etc/timezone) /etc/localtime"
+cp pacs.txt  ${TARGET_DIR}/tmp/
+chroot ${TARGET_DIR} "pacman -S $(cat /tmp/pacs.txt | xargs)"
 
 end_progress
 
