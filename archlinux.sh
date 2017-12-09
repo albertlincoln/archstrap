@@ -9,6 +9,7 @@ BOOTSTRAP_SOURCE_DIR=${MY_TMP_DIR}/root.x86_64
 PROGRESS_PID=
 LOGFILE="${CWD}/archlinux-install.log"
 spin='-\|/'
+mkdir -p ${PACSTRAP_TARGET_DIR}
 
 function progress () {
   arg=$1
