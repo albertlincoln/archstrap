@@ -3,6 +3,9 @@ set -e
 CWD=`pwd`
 MY_REPO_PATH="https://raw.githubusercontent.com/albertlincoln/archstrap/master/"
 MY_CHROOT_DIR=/tmp/arfs
+PACSTRAP_TARGET_DIR=/tmp/arfs
+MY_TMP_DIR=/tmp
+BOOTSTRAP_SOURCE_DIR=${MY_TMP_DIR}/root.x86_64
 PROGRESS_PID=
 LOGFILE="${CWD}/archlinux-install.log"
 spin='-\|/'
@@ -255,7 +258,7 @@ then
 fi
 
 parted -s ${target_disk} -- mklabel msdos \
-    mkpart primary ext2 2048s 4MiB -1s
+    mkpart primary ext2 2048s -1s
     
 mkfs.ext4 -O "^has_journal" -m 0 ${root_part} 
 
@@ -264,13 +267,22 @@ if [ ! -d /tmp/arfs ]
 then
   mkdir /tmp/arfs
 fi
-mount -t ext4 ${target_rootfs} /tmp/arfs
+mount -t ext4 ${target_rootfs} $PACSTRAP_TARGET_DIR
 
 tar_file="https://mirrors.kernel.org/archlinux/iso/latest/archlinux-bootstrap-2017.12.01-x86_64.tar.gz"
 
 start_progress "Downloading and extracting ArchLinuxARM rootfs"
 
-wget --quiet -O - $tar_file | tar xzvvp -C /tmp/arfs/ >> ${LOGFILE} 2>&1
+wget --quiet -O - $tar_file | tar xzvvp -C $MY_TMP_DIR >> ${LOGFILE} 2>&1
+
+genfstab -U /mnt >> $PACSTRAP_TARGET_DIR/etc/fstab
+
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "mkdir -p ${PACSTRAP_TARGET_DIR && /bin/mount ${target_rootfs} ${PACSTRAP_TARGET_DIR}"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacstrap ${PACSTRAP_TARGET_DIR} base" 
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${PACSTRAP_TARGET_DIR} /bin/bash -c "pacman-key --init"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${PACSTRAP_TARGET_DIR} /bin/bash -c "pacman-key --init"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${PACSTRAP_TARGET_DIR} /bin/bash -c "pacman-key --populate archlinux"
+
 
 end_progress
 
