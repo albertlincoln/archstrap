@@ -260,7 +260,7 @@ fi
 parted -s ${target_disk} -- mklabel msdos \
     mkpart primary ext2 2048s -1s
     
-mkfs.ext4 -O "^has_journal" -m 0 ${root_part} 
+mkfs.ext4 -O "^has_journal" -m 0 ${target_rootfs} 
 
 
 if [ ! -d /tmp/arfs ]
