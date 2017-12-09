@@ -2,14 +2,11 @@ set -e
 
 CWD=`pwd`
 MY_REPO_PATH="https://raw.githubusercontent.com/albertlincoln/archstrap/master/"
-PACSTRAP_TARGET_DIR=/opt/arfs
-MY_CHROOT_DIR=${PACSTRAP_TARGET_DIR}
-MY_TMP_DIR=/tmp
-BOOTSTRAP_SOURCE_DIR=${MY_TMP_DIR}/root.x86_64
+TARGET_DIR="/mnt"
+BOOTSTRAP_SOURCE_DIR="/opt/archbootstrap/root.x86_64"
 PROGRESS_PID=
 LOGFILE="${CWD}/archlinux-install.log"
 spin='-\|/'
-mkdir -p ${PACSTRAP_TARGET_DIR}
 
 function progress () {
   arg=$1
@@ -262,30 +259,31 @@ if [ "${SKIP_FORMAT}" == "" ]; then
 	parted -s ${target_disk} -- mklabel msdos \
 	    mkpart primary ext2 2048s -1s
 	sleep 1
-	mkfs.ext4 -O "^has_journal" -m 0 ${target_rootfs}
+	mkfs.ext4 -L "archlinux-"$(date +%s)  -O "^has_journal" -m 0 ${target_rootfs}
 fi
 
-mount -t ext4 ${target_rootfs} $PACSTRAP_TARGET_DIR
+#mount -t ext4 ${target_rootfs} $TARGET_DIR
 
-if [ ! "${SKIP_DOWNLOAD}" == "" ]; then
-	tar_file="https://mirrors.kernel.org/archlinux/iso/latest/archlinux-bootstrap-2017.12.01-x86_64.tar.gz"
+tar_file="https://mirrors.kernel.org/archlinux/iso/latest/archlinux-bootstrap-2017.12.01-x86_64.tar.gz"
+#start_progress "Downloading and extracting ArchLinuxARM rootfs"
+#wget --quiet -O - $tar_file | tar xzvvp -C $MY_TMP_DIR >> ${LOGFILE} 2>&1
+cd $(dirname $BOOTSTRAP_SOURCE_DIR)
 
-	start_progress "Downloading and extracting ArchLinuxARM rootfs"
+wget -c $tar_file
 
-	wget --quiet -O - $tar_file | tar xzvvp -C $MY_TMP_DIR >> ${LOGFILE} 2>&1
+if [ ! -d ${BOOTSTRAP_SOURCE_DIR} ]; then
+	echo "extract"
 fi
-
-#${BOOTSTRAP_SOURCE_DIR}/bin/genfstab -U /tmp >> $BOOTSTRAP_SOURCE_DIR/etc/fstab
-
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "mkdir -p ${PACSTRAP_TARGET_DIR} && /bin/mount ${target_rootfs} ${PACSTRAP_TARGET_DIR}"
 
 echo "Server = http://mirrors.acm.wpi.edu/archlinux/\$repo/os/\$arch" > ${BOOTSTRAP_SOURCE_DIR}/etc/pacman.d/mirrorlist
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "mount -t ext4 ${target_rootfs} ${TARGET_DIR}"
 
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacstrap ${PACSTRAP_TARGET_DIR} base" 
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacman-key --init"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacman-key --populate archlinux"
+
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacstrap ${TARGET_DIR} base" 
 
 
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${PACSTRAP_TARGET_DIR} /bin/bash -c "pacman-key --init"
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${PACSTRAP_TARGET_DIR} /bin/bash -c "pacman-key --init"
 
 
 end_progress
@@ -303,20 +301,6 @@ install_sound
 install_misc_utils
 
 
-echo -e "
-
-Installation seems to be complete.
-
-Username:  alarm
-Password:  alarm
-
-Root access can either be gained via sudo, or the root user:
-
-Username:  root
-Password:  root
-
-We're now ready to start ArchLinux!
-"
 
 read -p "Press [Enter] to reboot..."
 
