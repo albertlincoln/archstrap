@@ -73,7 +73,7 @@ function unset_chroot () {
 
 }
 
-trap unset_chroot EXIT
+#trap unset_chroot EXIT
 
 
 function install_dev_tools () {
@@ -208,13 +208,6 @@ end_progress
 
 echo "" > $LOGFILE
 
-powerd_status="`initctl status powerd`"
-if [ ! "$powerd_status" = "powerd stop/waiting" ]
-then
-  echo -e "Stopping powerd to keep display from timing out..."
-  initctl stop powerd
-fi
-
 #setterm -blank 0
 
 echo ""
@@ -262,7 +255,7 @@ then
 fi
 
 parted -s ${target_disk} -- mklabel msdos \
-    mkpart primary ext2 2048 4MiB -1s
+    mkpart primary ext2 2048s 4MiB -1s
     
 mkfs.ext4 -O "^has_journal" -m 0 ${root_part} 
 
