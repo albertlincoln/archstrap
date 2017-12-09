@@ -405,7 +405,7 @@ then
 fi
 mount -t ext4 ${target_rootfs} /tmp/arfs
 
-tar_file="http://archlinuxarm.org/os/ArchLinuxARM-${archlinux_arch}-${archlinux_version}.tar.gz"
+tar_file="https://mirrors.kernel.org/archlinux/iso/latest/archlinux-bootstrap-2017.12.01-x86_64.tar.gz"
 
 start_progress "Downloading and extracting ArchLinuxARM rootfs"
 
@@ -423,18 +423,18 @@ install_xbase
 
 install_xfce4
 
-install_sound
+#install_sound
 
-install_kernel
+#install_kernel
 
-install_gpu_driver
+#install_gpu_driver
 
 install_misc_utils
 
-tweak_misc_stuff
+#tweak_misc_stuff
 
 #Set ArchLinuxARM kernel partition as top priority for next boot (and next boot only)
-cgpt add -i ${kern_part} -P 5 -T 1 ${target_disk}
+#cgpt add -i ${kern_part} -P 5 -T 1 ${target_disk}
 
 echo -e "
 
