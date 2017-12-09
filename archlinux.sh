@@ -277,7 +277,7 @@ wget --quiet -O - $tar_file | tar xzvvp -C $MY_TMP_DIR >> ${LOGFILE} 2>&1
 
 genfstab -U /mnt >> $PACSTRAP_TARGET_DIR/etc/fstab
 
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "mkdir -p ${PACSTRAP_TARGET_DIR && /bin/mount ${target_rootfs} ${PACSTRAP_TARGET_DIR}"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "mkdir -p ${PACSTRAP_TARGET_DIR} && /bin/mount ${target_rootfs} ${PACSTRAP_TARGET_DIR}"
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacstrap ${PACSTRAP_TARGET_DIR} base" 
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${PACSTRAP_TARGET_DIR} /bin/bash -c "pacman-key --init"
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${PACSTRAP_TARGET_DIR} /bin/bash -c "pacman-key --init"
