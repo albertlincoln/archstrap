@@ -286,8 +286,8 @@ ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pa
 
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "pacstrap ${TARGET_DIR} base base-devel grub-bios" 
 ${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} /bin/bash -c "genfstab -p ${TARGET_DIR}  >> ${TARGET_DIR}/etc/fstab"
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} "grub-mkconfig -o /boot/grub/grub.cfg"
-${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR} "grub-install ${target_disk}"
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR}/${TARGET_DIR} /bin/bash -c "/usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg" 
+${BOOTSTRAP_SOURCE_DIR}/bin/arch-chroot ${BOOTSTRAP_SOURCE_DIR}/${TARGET_DIR} /bin/bash -c "/usr/sbin/grub-install ${target_disk}"
 echo $MACHINE_NAME >> ${BOOTSTRAP_SOURCE_DIR}/${TARGET_DIR}/etc/hostname
 
 umount ${target_rootfs}
