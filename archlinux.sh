@@ -266,7 +266,7 @@ fi
 
 #mount -t ext4 ${target_rootfs} $TARGET_DIR
 
-tar_file="https://mirrors.kernel.org/archlinux/iso/latest/archlinux-bootstrap-2017.12.01-x86_64.tar.gz"
+tar_file="https://mirrors.kernel.org/archlinux/iso/latest/archlinux-bootstrap-2019.04.01-x86_64.tar.gz"
 #start_progress "Downloading and extracting ArchLinuxARM rootfs"
 #wget --quiet -O - $tar_file | tar xzvvp -C $MY_TMP_DIR >> ${LOGFILE} 2>&1
 cd $(dirname $BOOTSTRAP_SOURCE_DIR)
