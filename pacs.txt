@@ -9,6 +9,7 @@ vim vim-plugins
 gnome-keyring
 mpv
 redshift
+lightdm
 tmux
 ttf-hack
 xorg-drivers
@@ -18,9 +19,9 @@ openssh
 chromium
 iw
 networkmanager
-nmap
 network-manager-applet
 nm-connection-editor
+nmap
 fdupes
 wpa_supplicant
 cpupower
